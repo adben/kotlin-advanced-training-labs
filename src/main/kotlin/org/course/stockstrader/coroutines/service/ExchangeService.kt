@@ -5,6 +5,7 @@ import org.course.stockstrader.coroutines.domain.StockQuoteDto
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.awaitBodyOrNull
 
 abstract class ExchangeService(val baseUrl: String, val exchangeId: String) {
 
@@ -25,8 +26,7 @@ abstract class ExchangeService(val baseUrl: String, val exchangeId: String) {
         client.get()
             .uri("/quotes?symbol=$stockSymbol&exchange=$exchangeId")
             .retrieve()
-            .bodyToMono<StockQuoteDto>(StockQuoteDto::class.java)
-            .awaitSingle()
+            .awaitBodyOrNull<StockQuoteDto>()
 
 }
 

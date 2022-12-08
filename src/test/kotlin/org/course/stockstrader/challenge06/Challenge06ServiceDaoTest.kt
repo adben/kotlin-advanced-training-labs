@@ -45,7 +45,7 @@ class Challenge06ServiceDaoTest @Autowired constructor(val stocksRepository: Sto
     fun `Exercise B should get stock quote from ExchangeService`(): Unit = runBlocking {
         //TODO("uncomment")
         val stockQuote = nasdaqService.getStockQuote(GOOG)
-        stockQuote.symbol shouldBe GOOG
+        stockQuote?.symbol shouldBe GOOG
     }
 
 
