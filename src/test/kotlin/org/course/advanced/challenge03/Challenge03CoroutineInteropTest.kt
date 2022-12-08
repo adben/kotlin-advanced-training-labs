@@ -1,16 +1,17 @@
 package org.course.advanced.challenge03
 
 import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.core.spec.style.AnnotationSpec
 import io.kotest.matchers.doubles.plusOrMinus
 import io.kotest.matchers.shouldBe
-import kotlinx.coroutines.*
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.future.await
+import kotlinx.coroutines.runBlocking
 import org.course.advanced.challenge03.AsyncCurrencyService.Companion.CHF
 import org.course.advanced.challenge03.AsyncCurrencyService.Companion.INEXISTANT_CURRENCY
 import org.junit.jupiter.api.Test
-import java.lang.Exception
 import kotlin.system.measureTimeMillis
-
-
 
 
 class Challenge03CoroutineInteropTest {
@@ -32,13 +33,14 @@ class Challenge03CoroutineInteropTest {
     @Test
     fun `Exercise A calculate the minimum conversion rate by calling the getCurrencyFuture(CHF) of all banks with coroutines and its helper method await on CompletableFuture`() {
         runBlocking {
-            val minRate = TODO("implement")
+            //check de parallelism
+            val minRate = banks.map { it.getCurrencyFuture(CHF) }.minOfOrNull { it.await() }
             minRate shouldBe 109.12
         }
     }
 
     /**
-    * Exercise B:
+     * Exercise B:
      * In this exercise you will write some glue code yourself, which bridges an asynchronous method call to a Coroutine.
      * Take a look at @see AsyncCurrencyService#getCurrencyAsync. It uses a callback interface @see AsyncCurrencyCallback to either set a currency
      * or an exception. The approach can lead to the well-known callback-hell, which is hard to reason about and test. With Coroutines we can do
@@ -49,7 +51,7 @@ class Challenge03CoroutineInteropTest {
      * Tip: The Coroutine glue code involves the helper method suspendCoroutine {...} which gives you access to the underlying Continuation.
      * With the underlying Continuation a success or failure result can be set.
      * Make this test succeed.
-    */
+     */
     @Test
     fun `Exercise B implement the getCurrencySuspended() method that calls getCurrencyAsync and maps the Callback to the Coroutines Continuation using the suspendCoroutine helper`() {
         val coroutinesMs = measureTimeMillis {

@@ -4,6 +4,9 @@ import java.lang.Exception
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 interface AsyncCurrencyCallback {
     fun onResponse(rate: Double)
@@ -47,8 +50,9 @@ class AsyncCurrencyService(private val latency: Long, private val exchangeRates:
  * Tip: The Coroutine glue code involves the helper method suspendCoroutine {...} which gives you access to the underlying Continuation.
  * With the underlying Continuation a success or failure result can be set.
  */
-suspend fun AsyncCurrencyService.getCurrencySuspended(symbol: String): Double = TODO("implement")
-//    val callback = object : AsyncCurrencyCallback {
-//        override fun onResponse(rate: Double) = TODO()
-//        override fun onFailure(exception: Exception) = TODO()
-//    }
+suspend fun AsyncCurrencyService.getCurrencySuspended(symbol: String): Double = suspendCoroutine {
+    val callback = object : AsyncCurrencyCallback {
+        override fun onResponse(rate: Double) = it.resume(rate)
+        override fun onFailure(exception: Exception) = it.resumeWithException(exception)
+    }
+}
