@@ -26,6 +26,8 @@ interface StocksRepository : CoroutineCrudRepository<Stock, Long> {
 
     //=================================================================================================================
 
+    suspend fun findBySymbol(symbol: String): Stock
+
 
     fun findById_GreaterThan(id: Long): Flow<Stock>
 

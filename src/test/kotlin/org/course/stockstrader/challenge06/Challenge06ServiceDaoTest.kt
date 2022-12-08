@@ -1,5 +1,6 @@
 package org.course.stockstrader.challenge06
 
+import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.runBlocking
 import org.course.stockstrader.coroutines.repository.StocksRepository
 import org.course.stockstrader.coroutines.service.ExchangeServiceNasdaq
@@ -32,10 +33,8 @@ class Challenge06ServiceDaoTest @Autowired constructor(val stocksRepository: Sto
      */
     @Test
     fun `Exercise A should get stock by symbol from Coroutine enabled StocksRepository`(): Unit = runBlocking {
-        TODO("uncomment")
-//        val foundStock = stocksRepository.findBySymbol(GOOG)
-//        foundStock?.symbol shouldBe GOOG
-
+        val foundStock = stocksRepository.findBySymbol(GOOG)
+        foundStock?.symbol shouldBe GOOG
     }
 
     /**
@@ -44,9 +43,9 @@ class Challenge06ServiceDaoTest @Autowired constructor(val stocksRepository: Sto
      */
     @Test
     fun `Exercise B should get stock quote from ExchangeService`(): Unit = runBlocking {
-        TODO("uncomment")
-//        val stockQuote = nasdaqService.getStockQuote(GOOG)
-//        stockQuote.symbol shouldBe GOOG
+        //TODO("uncomment")
+        val stockQuote = nasdaqService.getStockQuote(GOOG)
+        stockQuote.symbol shouldBe GOOG
     }
 
 
