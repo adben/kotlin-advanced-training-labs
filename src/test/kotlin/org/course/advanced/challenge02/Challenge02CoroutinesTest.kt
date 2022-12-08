@@ -1,9 +1,10 @@
 package org.course.advanced.challenge02
 
+import io.kotest.engine.launcher.parseLauncherArgs
 import io.kotest.matchers.doubles.plusOrMinus
 import io.kotest.matchers.longs.shouldBeGreaterThanOrEqual
-import io.kotest.matchers.string.shouldStartWith
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.string.shouldStartWith
 import kotlinx.coroutines.*
 import org.course.advanced.challenge02.CurrencyService.Companion.USD
 import org.junit.jupiter.api.Test
@@ -44,8 +45,10 @@ class Challenge02CoroutinesTest {
     @Test
     fun `Exercise B should call CurrencyService getCurrency(USD) method of bankA with correct coroutine builder `() {
         //TODO: call the newly implemented method CurrencyService.getCurrency(USD) for bankA .
-        TODO("Uncomment assertion below when doing this exercise")
-        //bankA.getCurrency(USD) shouldBe 125.12
+        //TODO("Uncomment assertion below when doing this exercise")
+        runBlocking {
+            bankA.getCurrency(USD) shouldBe 125.12
+        }
     }
 
     /**
@@ -74,7 +77,12 @@ class Challenge02CoroutinesTest {
         val coroutinesMs = measureTimeMillis {
             runBlocking {
                 //TODO: call CurrencyService.getCurrency(USD) of bankA and bankB concurrently using the coroutine builder launch
-
+                launch {
+                    bankA.getCurrency(USD)
+                }
+                launch {
+                    bankB.getCurrency(USD)
+                }
             } //<- at the end of runBlocking all Coroutines will have been joined 'automagically' due to structured concurrency,
         }
         //important: the total time should not be greater (+/-) than the latency of the slowest service (here bankB)
@@ -114,8 +122,14 @@ class Challenge02CoroutinesTest {
         //even though we only have one thread it is used much more efficient because suspend functions don't block the Thread that executes them
         val coroutinesMs = measureTimeMillis {
             //TODO: call CurrencyService.getCurrency(USD) of all banks using the singleThreadPool as input of the coroutine builder method runBlocking
-            runBlocking {
+
+            runBlocking(singleThreadPool) {
                 //TODO: call the methods here
+                banks.map {
+                    launch {
+                        it.getCurrency(USD)
+                    }
+                }
                 Thread.currentThread().name shouldStartWith "single-thread-pool"
             }
         }
@@ -135,7 +149,7 @@ class Challenge02CoroutinesTest {
         val coroutinesMs = measureTimeMillis {
             //TODO: calculate the average conversion rate of all backs executing the call to getCurrency(USD) in parallel using async and await
             runBlocking {
-                val averageRateOfAllBanks: Double = TODO("implement")
+                val averageRateOfAllBanks: Double = banks.map { async { it.getCurrency(USD) } }.awaitAll().average()
                 averageRateOfAllBanks shouldBe listOf(125.12, 126.2, 124.12).average()
             }
         }
